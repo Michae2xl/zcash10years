@@ -846,6 +846,11 @@ a:focus-visible {
   padding: 42px 200px 0 0;
 }
 
+/* Sapling's tall wordmark extends below the tree; reserve a clean text lane. */
+.script-sheet:has(.upgrade-mark--sa) .sheet-title {
+  min-height: 174px;
+}
+
 .sheet-title small {
   display: block;
   margin-bottom: 8px;
@@ -2104,6 +2109,10 @@ a:focus-visible {
     min-height: 112px;
     padding-top: 31px;
     padding-right: 144px;
+  }
+
+  .script-sheet:has(.upgrade-mark--sa) .sheet-title {
+    min-height: 132px;
   }
 
   .figure-dossier ul {
