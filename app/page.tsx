@@ -57,25 +57,6 @@ const SURFACE_LABELS: Record<SheetSurface, string> = {
   cli: "MULTI-AGENT CLI",
 };
 
-const PROLOGUE = [
-  {
-    year: "1982",
-    name: "David Chaum",
-    title: "Blind signatures",
-    note: "A mint signs digital cash without seeing the coin.",
-    mark: "DC",
-    source: "https://chaum.com/ecash/",
-  },
-  {
-    year: "2004",
-    name: "Hal Finney",
-    title: "Reusable Proof of Work",
-    note: "Proof-of-work becomes a transferable cash prototype.",
-    mark: "HF",
-    source: "https://nakamotoinstitute.org/finney/rpow/",
-  },
-] as const;
-
 const ERAS: Era[] = [
   {
     date: "MAY 2013",
@@ -289,7 +270,7 @@ const ERAS: Era[] = [
     commits: 8208,
     ties: 1756,
     accent: "#dfa328",
-    logo: "/upgrades/zebra.webp",
+    logo: "/upgrades/zebra.png",
     logoStyle: "zebra",
     mark: "ZB",
     source: "https://zfnd.org/zebra-stable-release/",
@@ -391,7 +372,7 @@ function initials(name: string) {
 }
 
 function UpgradeMark({ era }: { era: Era }) {
-  if (!era.logo && era.phase === "ORIGINS") {
+  if (!era.logo) {
     return (
       <a
         className="upgrade-mark upgrade-mark--learn"
@@ -418,7 +399,6 @@ function UpgradeMark({ era }: { era: Era }) {
 }
 
 export default function Home() {
-  const [entered, setEntered] = useState(false);
   const [active, setActive] = useState(0);
   const [typedLength, setTypedLength] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -557,9 +537,10 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    setTypedLength(0);
+    const timer = window.setTimeout(() => setTypedLength(0), 0);
     if (sound && active !== previousActive.current) playBell();
     previousActive.current = active;
+    return () => window.clearTimeout(timer);
   }, [active, playBell, sound]);
 
   useEffect(() => {
@@ -575,11 +556,9 @@ export default function Home() {
   }, [active, reducedMotion]);
 
   useEffect(() => {
-    if (!entered) return;
-
     if (reducedMotion && typedLength < fullText.length) {
-      setTypedLength(fullText.length);
-      return;
+      const timer = window.setTimeout(() => setTypedLength(fullText.length), 0);
+      return () => window.clearTimeout(timer);
     }
 
     if (typedLength < fullText.length) {
@@ -604,20 +583,7 @@ export default function Home() {
       }, 1300);
       return () => window.clearTimeout(timer);
     }
-  }, [active, entered, fullText, playKey, playing, reducedMotion, typedLength]);
-
-  const beginExperience = async (withSound: boolean) => {
-    if (withSound) {
-      const audio = await ensureAudio();
-      setSound(true);
-      playBell(audio);
-    }
-    setActive(0);
-    setTypedLength(0);
-    setFinale(false);
-    setEntered(true);
-    setPlaying(true);
-  };
+  }, [active, fullText, playKey, playing, reducedMotion, typedLength]);
 
   const goTo = useCallback((index: number) => {
     setPlaying(false);
@@ -646,7 +612,6 @@ export default function Home() {
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
-      if (!entered) return;
       if (finale) {
         if (event.key === "Escape") setFinale(false);
         return;
@@ -670,13 +635,13 @@ export default function Home() {
   };
 
   const [typedStory = "", typedCode = ""] = fullText.slice(0, typedLength).split("\n\n");
-  const isTyping = entered && typedLength < fullText.length;
+  const isTyping = typedLength < fullText.length;
   const reverse = era.machineIndex >= 4;
   const progress = (active / (ERAS.length - 1)) * 100;
 
   return (
     <main
-      className={`story-world ${entered ? "has-entered" : ""} ${reverse ? "is-reversed" : ""}`}
+      className={`story-world ${reverse ? "is-reversed" : ""}`}
       style={
         {
           "--accent": era.accent,
@@ -696,10 +661,9 @@ export default function Home() {
           </span>
         </a>
 
-        <div className="masthead-center">
-          <span>{String(active + 1).padStart(2, "0")}</span>
-          <i />
-          <span>{String(ERAS.length).padStart(2, "0")}</span>
+        <div className="masthead-center" aria-label="10 Years">
+          <b>10</b>
+          <span>YEARS</span>
         </div>
 
         <div className="masthead-actions">
@@ -865,55 +829,6 @@ export default function Home() {
         </section>
       )}
 
-      {!entered && (
-        <section className="entry-gate">
-          <div className="entry-backdrop" aria-hidden="true" />
-          <div className="entry-content">
-            <div className="entry-brand">
-              <img src={assetPath("/zcash-official-white.svg")} alt="Zcash" />
-              <span>AN INTERACTIVE ARCHIVE</span>
-            </div>
-            <p className="entry-eyebrow">2013—2026 · {ERAS.length} CHAPTERS</p>
-            <h1>
-              FROM IRON
-              <em>TO CODE</em>
-            </h1>
-            <p className="entry-intro">
-              Follow the machines, people and protocols from Zerocoin to Zerocash, Zcash and Ironwood.
-            </p>
-            <aside className="entry-prologue" aria-label="A short historical prologue">
-              <span className="entry-prologue__label">A SHORT PROLOGUE</span>
-              {PROLOGUE.map((item) => (
-                <a
-                  className="prologue-card"
-                  href={item.source}
-                  target="_blank"
-                  rel="noreferrer"
-                  key={item.year}
-                >
-                  <span className="prologue-mark" aria-hidden="true">{item.mark}</span>
-                  <span className="prologue-copy">
-                    <small>{item.year} · {item.title}</small>
-                    <b>{item.name}</b>
-                    <p>{item.note}</p>
-                  </span>
-                  <span className="prologue-arrow" aria-hidden="true">↗</span>
-                </a>
-              ))}
-            </aside>
-            <div className="entry-actions">
-              <button className="begin-button" onClick={() => beginExperience(true)}>
-                <span aria-hidden="true">▶</span>
-                BEGIN WITH SOUND
-              </button>
-              <button className="silent-button" onClick={() => beginExperience(false)}>
-                CONTINUE SILENTLY
-              </button>
-            </div>
-            <p className="entry-note">Sound begins after your click, as required by modern browsers.</p>
-          </div>
-        </section>
-      )}
     </main>
   );
 }
