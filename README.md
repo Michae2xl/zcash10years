@@ -28,5 +28,6 @@ NEXT_PUBLIC_BASE_PATH=/zcash10years npm run build:pages
 
 ## Deployment
 
-Every push to `main` exports the application as a static site and deploys the
-`out` directory through GitHub Actions to GitHub Pages.
+The production export is published from the `gh-pages` branch. Build it with
+`NEXT_PUBLIC_BASE_PATH=/zcash10years npm run build:pages`, then publish the
+contents of the generated `out` directory to that branch.
