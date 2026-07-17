@@ -60,6 +60,11 @@ test("keeps the main chronology scoped to 2013–2026", async () => {
   assert.match(page, /if \(!era\.logo\)/);
   assert.match(page, /KNOW MORE ↗/);
   assert.match(page, /new AudioContext\(\)/);
+  assert.match(page, /createDynamicsCompressor\(\)/);
+  assert.match(page, /function createNoiseBuffer/);
+  assert.match(page, /const instrument = active <= 4 \? "typewriter"/);
+  assert.match(page, /const togglePlay = async \(\) =>/);
+  assert.match(page, /const audio = await ensureAudio\(\)/);
   assert.match(page, /\/upgrades\/sprout\.png/);
   assert.match(page, /\/upgrades\/sapling\.png/);
   assert.match(page, /\/upgrades\/zebra\.png/);
