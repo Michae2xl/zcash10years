@@ -55,6 +55,8 @@ test("keeps the main chronology scoped to 2013–2026", async () => {
   assert.doesNotMatch(page, /const PROLOGUE = \[/);
   assert.doesNotMatch(page, /entry-gate/);
   assert.match(page, /aria-label="10 Years"/);
+  assert.match(page, /href=\{assetPath\("\/"\)\} aria-label="Return to the 2013 beginning"/);
+  assert.doesNotMatch(page, /className="zcash-brand" href="https:\/\/z\.cash\/"/);
   assert.match(page, /if \(!era\.logo\)/);
   assert.match(page, /KNOW MORE ↗/);
   assert.match(page, /new AudioContext\(\)/);
